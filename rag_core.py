@@ -17,6 +17,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from config import settings
 
+import os
 
 class RAGPipeline:
     """

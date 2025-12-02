@@ -16,21 +16,23 @@ Route = Literal["sql", "rag", "sql+rag"]
 
 router_prompt = ChatPromptTemplate.from_template(
     """
-You are a router that decides how to answer a user's question in a hybrid SQL + RAG system.
+You are a routing classifier deciding whether a question should be answered using SQL or RAG.
 
-Decide which of these routes is most appropriate:
-- "sql": when the question is primarily about exact numbers, aggregations, or metrics that can be computed from structured data in a database (e.g., sums, averages, counts, time-series).
-- "rag": when the question is mostly qualitative, descriptive, or explanatory and does not require exact numeric computation.
-- "sql+rag": when the question needs both exact numeric results from SQL and additional qualitative or contextual explanation.
+Always choose **SQL** when:
+- The question asks for counts (e.g., "how many...", "number of...", "count all...")
+- The question asks to list items (e.g., "list hotels", "show all hotels", "names of...")
+- The question asks about any data found in database tables
+- The question can be answered directly from structured data
 
-Return ONLY one of: sql, rag, sql+rag
+Choose **RAG** only when:
+- The question requires long-form description, comparison, hotel features, amenities, views, areas, etc.
+- The answer must come from PDF documents and not from SQL tables.
 
-Question:
-{question}
+Classify this question strictly as either "sql" or "rag":
+
+Question: {question}
 """.strip()
 )
-
-
 @dataclass
 class HybridAnswer:
     route: Route
