@@ -49,19 +49,32 @@ class SQLPipeline:
         # Prompt to generate SQL directly from schema + question
         self.sql_prompt = ChatPromptTemplate.from_template(
             """
-You are an expert data analyst and SQL writer.
-You are working with a MySQL database. Use ONLY the tables and columns provided.
+            You are an expert MySQL analyst and SQL generator.
+            Use ONLY the tables and columns provided.
 
-Database schema:
-{schema}
+            IMPORTANT — DATE RULE:
+            - The `date` column is stored as a TEXT string.
+            - Its format may vary (e.g., '2025-08-21', '21/08/2025', '08/21/2025').
+            - ALWAYS parse it safely using:
 
-Write a single SQL query that answers the user's question.
-- Use ANSI SQL compatible with MySQL.
-- Do not include any explanation, only the SQL query.
+            COALESCE(
+                STR_TO_DATE(date, '%Y-%m-%d'),
+                STR_TO_DATE(date, '%d/%m/%Y'),
+                STR_TO_DATE(date, '%m/%d/%Y')
+            )
 
-Question:
-{question}
-""".strip()
+            - NEVER use DATE(date) directly.
+            - NEVER assume the date format.
+
+            Database schema:
+            {schema}
+
+            Write ONLY a valid MySQL SQL query (no explanation).
+            The query must answer the user's question.
+
+            Question:
+            {question}
+            """.strip()
         )
 
     def ask_sql(self, question: str) -> SQLAnswer:
