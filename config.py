@@ -31,7 +31,7 @@ class Settings:
     mysql_password: str = os.getenv("MYSQL_PASSWORD", "basit456")
     mysql_table: str = os.getenv("MYSQL_TABLE", "dubai_hotels_daily")
     # Optional full SQLAlchemy URL; if empty, it will be built from the above pieces.
-    mysql_url: str = os.getenv("MYSQL_URL", "")
+    mysql_url: str = os.getenv("MYSQL_URL", "mysql+pymysql://root:vRwmNEgcCupORQptMUSWEtpMzvGKAKnu@gondola.proxy.rlwy.net:12931/railway")
 
 
 settings = Settings()
