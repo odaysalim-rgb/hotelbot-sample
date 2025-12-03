@@ -88,6 +88,62 @@ class HybridQAPipeline:
         self.rag_pipeline = RAGPipeline()
 
     def _route(self, question: str) -> Route:
+        """
+        Decide which subsystem to use.
+
+        We combine:
+        - Simple, deterministic keyword heuristics for numeric/SQL-heavy questions
+        - The LLM-based router as a fallback for more nuanced cases
+        """
+        q = question.lower()
+
+        # Strong SQL hints: numeric KPIs and time-based comparisons
+        numeric_keywords = [
+            "adr",
+            "occupancy",
+            "rooms_sold",
+            "rooms sold",
+            "rooms_available",
+            "rooms available",
+            "revenue",
+            "revpar",
+            "percent",
+            "%",
+            "average",
+            "avg",
+            "sum",
+            "total",
+            "highest",
+            "lowest",
+            "max",
+            "min",
+            "peak",
+            "record",
+            "2024",
+            "2025",
+            "same day last year",
+            "year on year",
+            "yoy",
+            "competition",  # ADR_Competition / Occupancy_Competition_%
+        ]
+
+        wants_explanation_keywords = [
+            "why",
+            "explain",
+            "reason",
+            "describe",
+            "what makes",
+            "tell me about",
+        ]
+
+        if any(kw in q for kw in numeric_keywords):
+            # Purely numeric → SQL
+            if not any(kw in q for kw in wants_explanation_keywords):
+                return "sql"
+            # Numeric + explanation → hybrid
+            return "sql+rag"
+
+        # Fallback: use LLM-based router
         msg = router_prompt.format(question=question)
         route = self.router_llm.invoke(msg).content.strip().lower()
         if route not in {"sql", "rag", "sql+rag"}:
@@ -118,6 +174,10 @@ class HybridQAPipeline:
               (e.g. several days all with the same highest occupancy or ADR),
               you MUST list **all** of those rows in the answer.
             - Do NOT arbitrarily pick just one row when there are ties.
+            - When you mention any numeric value (ADR, occupancy, revenue, etc.)
+                you MUST copy it exactly from the SQL result. Do NOT recompute or
+                re‑average numbers, and do NOT use different numbers in the summary
+                and in the table. The numbers in the narrative and the table must match.
             - For date questions like \"when did X have the highest Y\", if several dates
               share the same highest Y, explicitly mention that there are multiple dates
               and enumerate each date with its value.

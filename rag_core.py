@@ -163,6 +163,10 @@ class RAGPipeline:
             You are a helpful assistant that answers questions based **only** on the provided context.
             if they thankyou and say great job, say you're welcome and ask them if they have any other questions.
             If the answer is not in the context, say you don't know.
+            - When you mention any numeric value (ADR, occupancy, revenue, etc.)
+                you MUST copy it exactly from the SQL result. Do NOT recompute or
+                re‑average numbers, and do NOT use different numbers in the summary
+                and in the table. The numbers in the narrative and the table must match.
             If you find the price of hotel or revenue or any other financial number then it end add AED in the end of the number.
 
             Context:
