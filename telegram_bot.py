@@ -54,7 +54,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = qa_pipeline.ask(full_question)
 
     reply = f"{result.answer}"
-    logger.info("🤖 LLM Answer:\n%s", reply)
+    
 
     # Update memory for this chat (keep last ~10 turns)
     history.append(f"User: {user_message}")
