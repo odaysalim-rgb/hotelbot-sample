@@ -175,9 +175,9 @@ class HybridQAPipeline:
               you MUST list **all** of those rows in the answer.
             - Do NOT arbitrarily pick just one row when there are ties.
             - When you mention any numeric value (ADR, occupancy, revenue, etc.)
-                you MUST copy it exactly from the SQL result. Do NOT recompute or
-                re‑average numbers, and do NOT use different numbers in the summary
-                and in the table. The numbers in the narrative and the table must match.
+              you MUST copy it exactly from the SQL result. Do NOT recompute or
+              re‑average numbers, and do NOT use different numbers in the summary
+              and in the table. The numbers in the narrative and the table must match.
             - For date questions like \"when did X have the highest Y\", if several dates
               share the same highest Y, explicitly mention that there are multiple dates
               and enumerate each date with its value.
@@ -247,6 +247,12 @@ class HybridQAPipeline:
             5. NO HALLUCINATION
             - Never add hotels, metrics, dates, or numbers not present.
             - Never guess or invent interpretations.
+
+            6. CURRENCY FORMAT
+            - All monetary values are in AED. Never use the \"$\" symbol.
+              When you mention ADR, revenue, or any price, either:
+              - append \" AED\" after the number (e.g. 1200.50 AED), or
+              - clearly state in the text that the figures are in AED.
 
             ================================================
 
